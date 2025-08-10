@@ -10,9 +10,10 @@ CREATE TABLE IF NOT EXISTS Unidades_Medida (
 
 -- Tabla: Categorias_Materiales
 CREATE TABLE IF NOT EXISTS Categorias_Materiales (
-    id_categoria INT AUTO_INCREMENT PRIMARY KEY,
+    id_categoria INT PRIMARY KEY,
     nombre_categoria VARCHAR(50),
-    descripcion TEXT
+    descripcion TEXT,
+    CONSTRAINT chk_id_categoria CHECK (id_categoria % 1000 = 0) -- Asegura múltiplos de 1000
 );
 
 -- Tabla: Materiales
@@ -48,11 +49,12 @@ CREATE TABLE IF NOT EXISTS Stock (
     FOREIGN KEY (id_ubicacion) REFERENCES Ubicaciones(id_ubicacion)
 );
 
--- Tabla: Tipos_Movimiento
+-- Tabla: Tipos_Movimiento (con autoinicio en 101)
 CREATE TABLE IF NOT EXISTS Tipos_Movimiento (
     id_tipo_mov INT AUTO_INCREMENT PRIMARY KEY,
-    descripcion_tipo VARCHAR(50)
-);
+    descripcion_tipo VARCHAR(50),
+    CONSTRAINT chk_id_length CHECK (id_tipo_mov BETWEEN 101 AND 999)
+) AUTO_INCREMENT = 101;
 
 -- Tabla: Movimientos
 CREATE TABLE IF NOT EXISTS Movimientos (
