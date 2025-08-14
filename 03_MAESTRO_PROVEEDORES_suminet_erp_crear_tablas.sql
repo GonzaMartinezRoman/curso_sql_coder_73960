@@ -1,9 +1,3 @@
-
--- ===============================================
--- Script: suminet_erp_crear_tablas_modulo_proveedores.sql
--- Descripción: Crea las tablas del módulo de proveedores para Suminet ERP
--- ===============================================
-
 -- Tabla: Registro_Proveedores
 CREATE TABLE Registro_Proveedores (
     id_proveedor INT PRIMARY KEY,
@@ -60,13 +54,13 @@ CREATE TABLE Contactos_Proveedor (
     FOREIGN KEY (id_proveedor) REFERENCES Registro_Proveedores(id_proveedor)
 );
 
--- Tabla: Evaluaciones_Desempeno
-CREATE TABLE Evaluaciones_Desempeno (
+-- Tabla: Auditoria_Proveedores
+CREATE TABLE Auditoria_Proveedores (
     id_evaluacion INT AUTO_INCREMENT PRIMARY KEY,
     id_proveedor INT NOT NULL,
     fecha_evaluacion DATE NOT NULL,
     puntaje DECIMAL(5,2) CHECK (puntaje BETWEEN 0 AND 100),
-    resultado ENUM('Apto', 'No Apto', 'Condicionado') NOT NULL,
+    resultado ENUM('Apto', 'No Apto', 'Condicional') NOT NULL,
     evaluador VARCHAR(100) NOT NULL,
     comentarios TEXT,
     FOREIGN KEY (id_proveedor) REFERENCES Registro_Proveedores(id_proveedor) ON DELETE CASCADE
