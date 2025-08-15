@@ -60,7 +60,7 @@ Deberás entregar los avances correspondientes a la segunda entrega de tu proyec
 - Listado de **Triggers** creados, con su descripción, objetivos y/o sobre qué tablas o situaciones se accionan.
 - Las secciones agregadas son concisas y sin párrafos de relleno.
 - El resto de la información se mantiene fiel a la entrega parcial 1, o incluye mejoras y detalles adicionales de nuevas tablas creadas.
-
+    
 ### Técnico
 
 - Se incluyen **dos archivos** `.sql`:
