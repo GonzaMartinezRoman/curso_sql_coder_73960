@@ -47,12 +47,68 @@ GROUP BY m.id_material, m.nombre_material, m.descripcion, m.unidad_base
 ORDER BY m.id_material;
 
 -- FUNCIONES
--- Función 1 -
+-- Función 1 - calcular_stock_disponible
+DELIMITER //
+
+CREATE FUNCTION calcular_stock_disponible(p_id_material INT)
+RETURNS INT
+DETERMINISTIC
+BEGIN
+    DECLARE v_stock_total INT;
+
+    SELECT COALESCE(SUM(cantidad_actual), 0)
+    INTO v_stock_total
+    FROM Stock
+    WHERE id_material = p_id_material;
+
+    RETURN v_stock_total;
+END 
+
+//
+
+DELIMITER ;
 
 -- PROCEDIMIENTOS ALMACENADOS
--- Procedimientos almacenado 1 - 
+-- Procedimientos almacenado 1 - crear_material
+DELIMITER //
+
+CREATE PROCEDURE crear_material (
+    IN p_nombre_material VARCHAR(100),
+    IN p_descripcion TEXT,
+    IN p_unidad_base VARCHAR(20),
+    IN p_categoria_id INT
+)
+BEGIN
+    -- Validar si ya existe un material con el mismo nombre
+    IF EXISTS (SELECT 1 FROM Materiales WHERE nombre_material = p_nombre_material) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El material ya existe en el maestro.';
+    ELSE
+        INSERT INTO Materiales (nombre_material, descripcion, unidad_base, id_categoria)
+        VALUES (p_nombre_material, p_descripcion, p_unidad_base, p_categoria_id);
+    END IF;
+END 
+
+//
+
+DELIMITER ;
 
 -- TRIGGERS
--- Trigger 1 - 
+-- Trigger 1 - log_cambios_stock
+DELIMITER //
+
+CREATE TRIGGER log_cambios_stock
+AFTER UPDATE ON Stock
+FOR EACH ROW
+BEGIN
+    IF OLD.cantidad_actual <> NEW.cantidad_actual OR OLD.id_ubicacion <> NEW.id_ubicacion THEN
+        INSERT INTO Log_Stock (id_material, id_ubicacion, cantidad_anterior, cantidad_nueva, usuario)
+        VALUES (NEW.id_material, NEW.id_ubicacion, OLD.cantidad_actual, NEW.cantidad_actual, USER());
+    END IF;
+END
+
+//
+
+DELIMITER ;
 
 
