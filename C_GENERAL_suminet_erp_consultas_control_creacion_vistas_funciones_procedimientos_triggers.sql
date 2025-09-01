@@ -18,3 +18,6 @@ SELECT calcular_stock_disponible(101) AS StockTotal;
 UPDATE Stock
 SET cantidad_actual = cantidad_actual + 4
 WHERE id_material = 145 AND id_ubicacion = 3;
+
+SELECT *
+FROM Log_Stock;

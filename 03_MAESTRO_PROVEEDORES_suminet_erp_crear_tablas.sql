@@ -79,3 +79,15 @@ CREATE TABLE Proveedor_Categoria_Aprobada (
     FOREIGN KEY (id_categoria) REFERENCES Categorias_Materiales(id_categoria),
     FOREIGN KEY (id_evaluacion) REFERENCES Evaluaciones_Desempeno(id_evaluacion)
 );
+
+-- Tabla para certificaciones específicas del sector
+CREATE TABLE Certificaciones_Proveedor (
+    id_certificacion INT PRIMARY KEY,
+    id_proveedor INT,
+    tipo_certificacion VARCHAR(50), -- Ejemplos: 'API', 'ATEX', 'ISO9001', 'ASME U', 'ASME UM',  etc.
+    numero_certificado VARCHAR(50),
+    fecha_emision DATE,
+    fecha_vencimiento DATE,
+    estado ENUM('Vigente', 'Vencido', 'Suspendido'),
+    FOREIGN KEY (id_proveedor) REFERENCES Registro_Proveedores(id_proveedor)
+);
