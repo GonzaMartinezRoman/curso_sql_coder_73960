@@ -111,4 +111,112 @@ END
 
 DELIMITER ;
 
+-- MÓDULO COMPRAS
+-- ==============================================================================
+-- TRIGGER PARA ACTUALIZAR TOTALES AUTOMÁTICAMENTE
+-- ==============================================================================
+
+DELIMITER //
+
+CREATE TRIGGER actualizar_total_orden
+AFTER INSERT ON Detalle_Orden_Compra
+FOR EACH ROW
+BEGIN
+    UPDATE Ordenes_Compra 
+    SET total = (
+        SELECT COALESCE(SUM(subtotal), 0)
+        FROM Detalle_Orden_Compra 
+        WHERE id_orden = NEW.id_orden
+    )
+    WHERE id_orden = NEW.id_orden;
+END//
+
+CREATE TRIGGER actualizar_total_orden_update
+AFTER UPDATE ON Detalle_Orden_Compra
+FOR EACH ROW
+BEGIN
+    UPDATE Ordenes_Compra 
+    SET total = (
+        SELECT COALESCE(SUM(subtotal), 0)
+        FROM Detalle_Orden_Compra 
+        WHERE id_orden = NEW.id_orden
+    )
+    WHERE id_orden = NEW.id_orden;
+END//
+
+CREATE TRIGGER actualizar_total_orden_delete
+AFTER DELETE ON Detalle_Orden_Compra
+FOR EACH ROW
+BEGIN
+    UPDATE Ordenes_Compra 
+    SET total = (
+        SELECT COALESCE(SUM(subtotal), 0)
+        FROM Detalle_Orden_Compra 
+        WHERE id_orden = OLD.id_orden
+    )
+    WHERE id_orden = OLD.id_orden;
+END//
+
+DELIMITER ;
+
+-- ==============================================================================
+-- VISTAS PARA CONSULTAS FRECUENTES
+-- ==============================================================================
+
+-- Vista: Resumen de Órdenes de Compra
+CREATE OR REPLACE VIEW Vista_Ordenes_Compra AS
+SELECT 
+    oc.numero_orden AS 'Número Orden',
+    rp.razon_social AS 'Proveedor',
+    oc.fecha_orden AS 'Fecha Orden',
+    oc.fecha_entrega_solicitada AS 'Fecha Entrega',
+    eo.descripcion_estado AS 'Estado',
+    oc.total AS 'Total ($)',
+    oc.solicitante AS 'Solicitante'
+FROM Ordenes_Compra oc
+INNER JOIN Registro_Proveedores rp ON oc.id_proveedor = rp.id_proveedor
+INNER JOIN Estados_Orden eo ON oc.id_estado = eo.id_estado
+ORDER BY oc.fecha_orden DESC;
+
+-- Vista: Detalle Completo de Órdenes
+CREATE OR REPLACE VIEW Vista_Detalle_Ordenes AS
+SELECT 
+    oc.numero_orden AS 'Número Orden',
+    rp.razon_social AS 'Proveedor',
+    m.nombre_material AS 'Material',
+    doc.cantidad_solicitada AS 'Cant. Solicitada',
+    doc.precio_unitario AS 'Precio Unit.',
+    doc.subtotal AS 'Subtotal',
+    doc.cantidad_recibida AS 'Cant. Recibida',
+    CASE 
+        WHEN doc.cantidad_recibida = 0 THEN 'Pendiente'
+        WHEN doc.cantidad_recibida < doc.cantidad_solicitada THEN 'Parcial'
+        ELSE 'Completo'
+    END AS 'Estado Recepción',
+    doc.fecha_recepcion AS 'Fecha Recepción'
+FROM Detalle_Orden_Compra doc
+INNER JOIN Ordenes_Compra oc ON doc.id_orden = oc.id_orden
+INNER JOIN Registro_Proveedores rp ON oc.id_proveedor = rp.id_proveedor
+INNER JOIN Materiales m ON doc.id_material = m.id_material
+ORDER BY oc.fecha_orden DESC, doc.id_detalle;
+
+-- Vista: Órdenes Pendientes de Recepción
+CREATE OR REPLACE VIEW Vista_Pendientes_Recepcion AS
+SELECT 
+    oc.numero_orden AS 'Número Orden',
+    rp.razon_social AS 'Proveedor',
+    m.nombre_material AS 'Material',
+    doc.cantidad_solicitada AS 'Cantidad Solicitada',
+    doc.cantidad_recibida AS 'Cantidad Recibida',
+    (doc.cantidad_solicitada - doc.cantidad_recibida) AS 'Cantidad Pendiente',
+    oc.fecha_entrega_solicitada AS 'Fecha Entrega Solicitada',
+    DATEDIFF(CURDATE(), oc.fecha_entrega_solicitada) AS 'Días de Atraso'
+FROM Detalle_Orden_Compra doc
+INNER JOIN Ordenes_Compra oc ON doc.id_orden = oc.id_orden
+INNER JOIN Registro_Proveedores rp ON oc.id_proveedor = rp.id_proveedor  
+INNER JOIN Materiales m ON doc.id_material = m.id_material
+WHERE doc.cantidad_recibida < doc.cantidad_solicitada
+AND oc.id_estado = 2  -- Solo órdenes enviadas
+ORDER BY oc.fecha_entrega_solicitada;
+
 

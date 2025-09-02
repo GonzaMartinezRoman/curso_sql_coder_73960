@@ -12,11 +12,15 @@ select * from Log_Stock;
 
 -- Módulo Catálogo Maestro de Proveedores  
 select * from Registro_Proveedores;
-select * from Alcance_Actividad;
-select * from Proveedor_Actividad;
-select * from Actividad_Categoria;
 select * from Contactos_Proveedor;
+select * from Certificaciones_Proveedor;
+select * from Alcance_Actividad;
 select * from Auditoria_Proveedores;
-select * from Proveedor_Categoria_Aprobada;
+select * from Desempeno_Proveedores;
+select * from Actividad_Categoria;
 
 -- Módulo Compras
+select * from Estados_Orden;
+select * from Ordenes_Compra;
+select * from Detalle_Orden_Compra;
+
