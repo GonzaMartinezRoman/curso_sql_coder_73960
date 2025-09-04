@@ -2,13 +2,13 @@
 -- MÓDULO COMPRAS - SUMINET ERP - GONZALO MARTINEZ ROMAN - CREACIÓN DE TABLAS
 -- ==============================================================================
 
--- Tabla: Estados_Orden
+-- 16-Estados_Orden
 CREATE TABLE Estados_Orden (
     id_estado INT PRIMARY KEY,
     descripcion_estado VARCHAR(50) NOT NULL
 );
 
--- Tabla: Ordenes_Compra
+-- 17-Ordenes_Compra
 CREATE TABLE Ordenes_Compra (
     id_orden INT AUTO_INCREMENT PRIMARY KEY,
     numero_orden VARCHAR(20) UNIQUE NOT NULL,
@@ -29,7 +29,7 @@ CREATE TABLE Ordenes_Compra (
     INDEX idx_fecha_orden (fecha_orden)
 );
 
--- Tabla: Detalle_Orden_Compra
+-- 18-Detalle_Orden_Compra
 CREATE TABLE Detalle_Orden_Compra (
     id_detalle INT AUTO_INCREMENT PRIMARY KEY,
     id_orden INT NOT NULL,

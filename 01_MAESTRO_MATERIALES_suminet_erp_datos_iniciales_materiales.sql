@@ -1,3 +1,9 @@
+-- =====================================================================================
+-- MÓDULO MAESTRO MATERIALES - SUMINET ERP - GONZALO MARTINEZ ROMAN - INSERCIÓN DE DATOS
+-- =====================================================================================
+
+-- 1-Materiales
+-- Datos iniciales de materiales
 INSERT INTO Materiales (nombre_material, descripcion, unidad_base, id_categoria, estado) VALUES
 -- Materiales Eléctricos (35 registros)
 ('Cable THHN 2.5mm² negro', 'Conductor de cobre estañado 600V, aislamiento THHN', 'M', 5, 'Activo'),
