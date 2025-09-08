@@ -166,19 +166,20 @@ END
 
 DELIMITER ;
 
-DELIMITER //
+
 
 -- Función 2 - calcular_rotacion_material
 -- Calcula la rotación de inventario de un material en los últimos X meses
 -- La rotación se calcula como: Total salidas / Stock promedio en el período
 -- Un valor alto indica alta rotación (material de movimiento rápido)
+DROP FUNCTION IF EXISTS calcular_rotacion_material;
+DELIMITER //
 CREATE FUNCTION calcular_rotacion_material(
     p_id_material INT, 
     p_meses INT
 )
 RETURNS DECIMAL(10,2)
 DETERMINISTIC
-READS SQL DATA
 BEGIN
     DECLARE v_total_salidas DECIMAL(10,2) DEFAULT 0;
     DECLARE v_stock_promedio DECIMAL(10,2) DEFAULT 0;
@@ -193,7 +194,7 @@ BEGIN
     INTO v_total_salidas
     FROM Movimientos
     WHERE id_material = p_id_material
-      AND tipo_movimiento = 2
+      AND tipo_movimiento = 102
       AND fecha_movimiento >= v_fecha_inicio;
     
     -- Calcular stock promedio actual (suma de todas las ubicaciones)
@@ -214,9 +215,6 @@ BEGIN
 END //
 
 DELIMITER ;
-
-
-
 
 -- PROCEDIMIENTOS ALMACENADOS
 -- Procedimientos almacenado 1 - crear_material
