@@ -89,9 +89,9 @@ El proyecto se estructura en **cuatro módulos**:
 
 ## 📂 Estructura del repositorio
 
+- `/01_Estructura BD` → scripts de creación de base datos y tablas.
 - `/02_Datos` → scripts de inserción de datos.  
-- `/03_Funcionalidades` → vistas, funciones, procedimientos y triggers.  
-- Documentación complementaria del proyecto.  
+- `/03_Funcionalidades` → vistas, funciones, procedimientos y triggers.   
 
 ---
 
