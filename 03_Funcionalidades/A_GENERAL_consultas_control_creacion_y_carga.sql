@@ -1,3 +1,7 @@
+-- ============================================================================
+-- SUMINET ERP - GONZALO MARTINEZ ROMAN - CONSULTAS GENERALAS PARA VERIFICACIÓN
+-- ============================================================================
+
 -- Módulo Catálogo Maestro de Materiales
 select * from Materiales;
 select * from Categorias_Materiales;
@@ -23,4 +27,3 @@ select * from Actividad_Categoria;
 select * from Estados_Orden;
 select * from Ordenes_Compra;
 select * from Detalle_Orden_Compra;
-

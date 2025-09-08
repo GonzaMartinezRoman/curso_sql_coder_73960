@@ -2,13 +2,15 @@
 -- 04-MÓDULO COMPRAS - SUMINET ERP - GONZALO MARTINEZ ROMAN - INSERCIÓN DE DATOS
 -- ==============================================================================
 
--- Datos para Estados_Orden
+-- 16-Estados_Orden
+-- Valores posibles para el estado de una orden de compra
 INSERT INTO Estados_Orden (id_estado, descripcion_estado) VALUES
 (1, 'Borrador'),
 (2, 'Enviada'),
 (3, 'Recibida'),
 (4, 'Cancelada');
 
+-- 17-Ordenes_Compra
 -- Órdenes de compra de ejemplo
 INSERT INTO Ordenes_Compra (numero_orden, id_proveedor, fecha_orden, fecha_entrega_solicitada, id_estado, solicitante, observaciones) VALUES
 ('OC-2024-001', 1, '2024-07-01', '2024-07-15', 2, 'Juan Pérez', 'Materiales para mantenimiento preventivo'),
@@ -20,6 +22,7 @@ INSERT INTO Ordenes_Compra (numero_orden, id_proveedor, fecha_orden, fecha_entre
 ('OC-2024-007', 2, '2024-07-15', '2024-08-01', 1, 'Elena Castro', 'Válvulas de seguridad'),
 ('OC-2024-008', 3, '2024-07-18', '2024-08-05', 2, 'Diego Morales', 'Tubos y accesorios');
 
+-- 18-Detalle_Orden_Compra
 -- Detalle de órdenes de compra con precios
 INSERT INTO Detalle_Orden_Compra (id_orden, id_material, cantidad_solicitada, precio_unitario, observaciones) VALUES
 -- OC-2024-001 (Electrotécnica Industrial)

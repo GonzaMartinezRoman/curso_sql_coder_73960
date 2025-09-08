@@ -3,12 +3,13 @@
 -- ==============================================================================
 
 -- 16-Estados_Orden
+-- Estados posibles para las órdenes de compra en el flujo del proceso.
 CREATE TABLE Estados_Orden (
     id_estado INT PRIMARY KEY,
     descripcion_estado VARCHAR(50) NOT NULL
 );
-
 -- 17-Ordenes_Compra
+-- Registro maestro de las órdenes de compra emitidas a proveedores.
 CREATE TABLE Ordenes_Compra (
     id_orden INT AUTO_INCREMENT PRIMARY KEY,
     numero_orden VARCHAR(20) UNIQUE NOT NULL,
@@ -28,8 +29,8 @@ CREATE TABLE Ordenes_Compra (
     INDEX idx_proveedor (id_proveedor),
     INDEX idx_fecha_orden (fecha_orden)
 );
-
 -- 18-Detalle_Orden_Compra
+-- Detalle de materiales solicitados en cada orden de compra con seguimiento de recepciones.
 CREATE TABLE Detalle_Orden_Compra (
     id_detalle INT AUTO_INCREMENT PRIMARY KEY,
     id_orden INT NOT NULL,

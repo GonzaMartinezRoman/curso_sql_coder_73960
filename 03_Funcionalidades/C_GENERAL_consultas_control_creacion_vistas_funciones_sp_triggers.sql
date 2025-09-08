@@ -1,3 +1,6 @@
+-- ===================================================================
+-- SUMINET ERP - GONZALO MARTINEZ ROMAN - CONSULTAS DE FUNCIONALIDADES
+-- ===================================================================
 -- Consultas para verificar creación y funcionamiento de Vistas, Funciones, Procedimientos Almacenados y Triggers.
 
 -- Vistas
@@ -7,6 +10,8 @@ SELECT *
 FROM Stock_Materiales;
 SELECT *
 FROM Stock_Materiales_Resumen;
+SELECT *
+FROM Reporte_Ordenes_Compra;
 
 -- Procedimientos almacenados
 CALL crear_material('Válvula Esférica flotante 2" A351CF8M RPTFE', 'Válvula esferica, esfera flotante, cuerpo y esfera en acero inoxidable ASTM A351 CF8M, asiento de RPTFE', 'UN', 3000);
