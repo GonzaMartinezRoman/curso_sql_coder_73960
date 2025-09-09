@@ -17,7 +17,24 @@ SELECT *
 FROM Vendor_Pool_List;
 
 -- Procedimientos almacenados
-CALL crear_material('Válvula Esférica flotante 2" A351CF8M RPTFE', 'Válvula esferica, esfera flotante, cuerpo y esfera en acero inoxidable ASTM A351 CF8M, asiento de RPTFE', 'UN', 3000);
+CALL crear_material(
+	'Válvula Esférica flotante 2" A351CF8M RPTFE', 
+	'Válvula esferica, esfera flotante, cuerpo y esfera en acero inoxidable ASTM A351 CF8M, asiento de RPTFE', 
+	'UN', 
+	3000
+);
+CALL registrar_nuevo_proveedor(
+	'Nuevos Suministros S.A.', 
+    '30-12350078-9', 
+    'Av. Santa Fe 1023', 
+    'Buenos Aires', 
+    'CABA',
+    'Nacional',
+    '011-1234-5678', 
+    'ventas@nuevossuministros.com.ar',
+    'www.nuevossuministros.com.ar'
+);
+SELECT * FROM Registro_Proveedores;
 
 -- Funciones
 SELECT calcular_stock_disponible(101) AS StockTotal;

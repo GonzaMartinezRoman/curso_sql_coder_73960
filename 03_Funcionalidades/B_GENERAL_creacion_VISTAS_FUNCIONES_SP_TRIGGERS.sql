@@ -217,7 +217,11 @@ END //
 DELIMITER ;
 
 -- PROCEDIMIENTOS ALMACENADOS
--- Procedimientos almacenado 1 - crear_material
+-- Procedimiento almacenado 1 - crear_material
+-- Este procedimiento almacenado inserta un nuevo registro en el Maestro de Materiales, 
+-- validando previamente que no exista un material con el mismo nombre. Recibe como parámetros el 
+-- nombre, descripción, unidad base y la categoría del material. En caso de duplicidad, devuelve un 
+-- error controlado.
 DELIMITER //
 
 CREATE PROCEDURE crear_material (
@@ -235,6 +239,36 @@ BEGIN
         INSERT INTO Materiales (nombre_material, descripcion, unidad_base, id_categoria)
         VALUES (p_nombre_material, p_descripcion, p_unidad_base, p_categoria_id);
     END IF;
+END 
+
+//
+
+DELIMITER ;
+
+-- Procedimiento almacenado 2 -registrar_nuevo_proveedor
+-- Este procedimiento almacenado inserta un nuevo registro en el Maestro de Proveedores. 
+DELIMITER //
+
+CREATE PROCEDURE registrar_nuevo_proveedor (
+    IN p_razon_social VARCHAR(100),
+    IN p_cuit VARCHAR(15),
+    IN p_direccion VARCHAR(150),
+    IN p_ciudad VARCHAR(50),
+    IN p_provincia VARCHAR(50),
+    IN p_tipo_pais ENUM('Nacional','Extranjero'),
+    IN p_telefono VARCHAR(20),
+    IN p_email VARCHAR(100),
+    IN p_sitio_web VARCHAR(100)
+)
+BEGIN
+    INSERT INTO Registro_Proveedores (
+        razon_social, cuit, direccion, ciudad, provincia, 
+        tipo_pais, telefono, email, sitio_web
+    )
+    VALUES (
+        p_razon_social, p_cuit, p_direccion, p_ciudad, p_provincia,
+        p_tipo_pais, p_telefono, p_email, p_sitio_web
+    );
 END 
 
 //
@@ -259,112 +293,45 @@ END
 
 DELIMITER ;
 
--- MÓDULO COMPRAS
--- ==============================================================================
--- TRIGGER PARA ACTUALIZAR TOTALES AUTOMÁTICAMENTE
--- ==============================================================================
-
+-- Trigger 2 - sincronizar_stock_movimiento
 DELIMITER //
 
-CREATE TRIGGER actualizar_total_orden
-AFTER INSERT ON Detalle_Orden_Compra
+CREATE TRIGGER sincronizar_stock_movimiento
+AFTER INSERT ON Movimientos
 FOR EACH ROW
 BEGIN
-    UPDATE Ordenes_Compra 
-    SET total = (
-        SELECT COALESCE(SUM(subtotal), 0)
-        FROM Detalle_Orden_Compra 
-        WHERE id_orden = NEW.id_orden
-    )
-    WHERE id_orden = NEW.id_orden;
-END//
+    DECLARE v_tipo VARCHAR(50);
 
-CREATE TRIGGER actualizar_total_orden_update
-AFTER UPDATE ON Detalle_Orden_Compra
-FOR EACH ROW
-BEGIN
-    UPDATE Ordenes_Compra 
-    SET total = (
-        SELECT COALESCE(SUM(subtotal), 0)
-        FROM Detalle_Orden_Compra 
-        WHERE id_orden = NEW.id_orden
-    )
-    WHERE id_orden = NEW.id_orden;
-END//
+    -- Obtener descripción del tipo de movimiento
+    SELECT descripcion_tipo 
+    INTO v_tipo
+    FROM Tipos_Movimiento
+    WHERE id_tipo_mov = NEW.tipo_movimiento;
 
-CREATE TRIGGER actualizar_total_orden_delete
-AFTER DELETE ON Detalle_Orden_Compra
-FOR EACH ROW
-BEGIN
-    UPDATE Ordenes_Compra 
-    SET total = (
-        SELECT COALESCE(SUM(subtotal), 0)
-        FROM Detalle_Orden_Compra 
-        WHERE id_orden = OLD.id_orden
-    )
-    WHERE id_orden = OLD.id_orden;
-END//
+    -- Solo sincronizamos stock para Entrada y Salida
+    IF v_tipo = 'Entrada' THEN
+        IF EXISTS (SELECT 1 FROM Stock WHERE id_material = NEW.id_material AND id_ubicacion = NEW.id_ubicacion) THEN
+            UPDATE Stock
+            SET cantidad_actual = cantidad_actual + NEW.cantidad,
+                fecha_actualizacion = CURDATE()
+            WHERE id_material = NEW.id_material AND id_ubicacion = NEW.id_ubicacion;
+        ELSE
+            INSERT INTO Stock (id_material, id_ubicacion, cantidad_actual, fecha_actualizacion)
+            VALUES (NEW.id_material, NEW.id_ubicacion, NEW.cantidad, CURDATE());
+        END IF;
+
+    ELSEIF v_tipo = 'Salida' THEN
+        UPDATE Stock
+        SET cantidad_actual = cantidad_actual - NEW.cantidad,
+            fecha_actualizacion = CURDATE()
+        WHERE id_material = NEW.id_material AND id_ubicacion = NEW.id_ubicacion;
+    END IF;
+END 
+
+//
 
 DELIMITER ;
 
--- ==============================================================================
--- VISTAS PARA CONSULTAS FRECUENTES
--- ==============================================================================
 
--- Vista: Resumen de Órdenes de Compra
-CREATE OR REPLACE VIEW Vista_Ordenes_Compra AS
-SELECT 
-    oc.numero_orden AS 'Número Orden',
-    rp.razon_social AS 'Proveedor',
-    oc.fecha_orden AS 'Fecha Orden',
-    oc.fecha_entrega_solicitada AS 'Fecha Entrega',
-    eo.descripcion_estado AS 'Estado',
-    oc.total AS 'Total ($)',
-    oc.solicitante AS 'Solicitante'
-FROM Ordenes_Compra oc
-INNER JOIN Registro_Proveedores rp ON oc.id_proveedor = rp.id_proveedor
-INNER JOIN Estados_Orden eo ON oc.id_estado = eo.id_estado
-ORDER BY oc.fecha_orden DESC;
-
--- Vista: Detalle Completo de Órdenes
-CREATE OR REPLACE VIEW Vista_Detalle_Ordenes AS
-SELECT 
-    oc.numero_orden AS 'Número Orden',
-    rp.razon_social AS 'Proveedor',
-    m.nombre_material AS 'Material',
-    doc.cantidad_solicitada AS 'Cant. Solicitada',
-    doc.precio_unitario AS 'Precio Unit.',
-    doc.subtotal AS 'Subtotal',
-    doc.cantidad_recibida AS 'Cant. Recibida',
-    CASE 
-        WHEN doc.cantidad_recibida = 0 THEN 'Pendiente'
-        WHEN doc.cantidad_recibida < doc.cantidad_solicitada THEN 'Parcial'
-        ELSE 'Completo'
-    END AS 'Estado Recepción',
-    doc.fecha_recepcion AS 'Fecha Recepción'
-FROM Detalle_Orden_Compra doc
-INNER JOIN Ordenes_Compra oc ON doc.id_orden = oc.id_orden
-INNER JOIN Registro_Proveedores rp ON oc.id_proveedor = rp.id_proveedor
-INNER JOIN Materiales m ON doc.id_material = m.id_material
-ORDER BY oc.fecha_orden DESC, doc.id_detalle;
-
--- Vista: Órdenes Pendientes de Recepción
-CREATE OR REPLACE VIEW Vista_Pendientes_Recepcion AS
-SELECT 
-    oc.numero_orden AS 'Número Orden',
-    rp.razon_social AS 'Proveedor',
-    m.nombre_material AS 'Material',
-    doc.cantidad_solicitada AS 'Cantidad Solicitada',
-    doc.cantidad_recibida AS 'Cantidad Recibida',
-    (doc.cantidad_solicitada - doc.cantidad_recibida) AS 'Cantidad Pendiente',
-    oc.fecha_entrega_solicitada AS 'Fecha Entrega Solicitada',
-    DATEDIFF(CURDATE(), oc.fecha_entrega_solicitada) AS 'Días de Atraso'
-FROM Detalle_Orden_Compra doc
-INNER JOIN Ordenes_Compra oc ON doc.id_orden = oc.id_orden
-INNER JOIN Registro_Proveedores rp ON oc.id_proveedor = rp.id_proveedor  
-INNER JOIN Materiales m ON doc.id_material = m.id_material
-WHERE doc.cantidad_recibida < doc.cantidad_solicitada
-AND oc.id_estado = 2  -- Solo órdenes enviadas
-ORDER BY oc.fecha_entrega_solicitada;
 
 
