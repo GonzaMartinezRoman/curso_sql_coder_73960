@@ -95,6 +95,8 @@ El proyecto se estructura en **cuatro módulos**:
 - `/01_Estructura BD` → scripts de creación de base datos y tablas.
 - `/02_Datos` → scripts de inserción de datos.  
 - `/03_Funcionalidades` → vistas, funciones, procedimientos y triggers.   
+- `Dumps` → backup de estructura de la base y datos.   
+- `Exports` → datos exportados de las vistas para reporting.   
 
 ---
 
