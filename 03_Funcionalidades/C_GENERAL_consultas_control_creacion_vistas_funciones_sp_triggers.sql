@@ -46,9 +46,18 @@ SELECT calcular_rotacion_material(2,24) AS Rotacion;
 -- SELECT calcular_stock_disponible(2);
 
 -- Triggers
+-- Trigger 1
 UPDATE Stock
 SET cantidad_actual = cantidad_actual + 4
 WHERE id_material = 145 AND id_ubicacion = 3;
 
 SELECT *
 FROM Log_Stock;
+
+-- Trigger 2
+INSERT INTO Movimientos (fecha_movimiento, tipo_movimiento, cantidad, id_material, id_ubicacion, observaciones)
+VALUES (CURDATE(), 101, 50, 1, 1, 'Entrada inicial de stock para prueba');
+
+SELECT * FROM Movimientos;
+SELECT * FROM Stock WHERE id_material = 1 AND id_ubicacion = 1;
+

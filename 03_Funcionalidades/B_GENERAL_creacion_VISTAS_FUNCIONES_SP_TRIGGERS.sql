@@ -300,37 +300,48 @@ CREATE TRIGGER sincronizar_stock_movimiento
 AFTER INSERT ON Movimientos
 FOR EACH ROW
 BEGIN
-    DECLARE v_tipo VARCHAR(50);
+    DECLARE v_delta DECIMAL(10,2) DEFAULT 0;
 
-    -- Obtener descripción del tipo de movimiento
-    SELECT descripcion_tipo 
-    INTO v_tipo
-    FROM Tipos_Movimiento
-    WHERE id_tipo_mov = NEW.tipo_movimiento;
+    -- Determinar el signo según el código de tipo_movimiento
+    IF NEW.tipo_movimiento IN (101, 104) THEN
+        -- Entrada por compra o Ajuste positivo
+        SET v_delta = NEW.cantidad;
 
-    -- Solo sincronizamos stock para Entrada y Salida
-    IF v_tipo = 'Entrada' THEN
-        IF EXISTS (SELECT 1 FROM Stock WHERE id_material = NEW.id_material AND id_ubicacion = NEW.id_ubicacion) THEN
+    ELSEIF NEW.tipo_movimiento IN (102, 105, 106) THEN
+        -- Salida por consumo, Ajuste negativo o Devolución al proveedor
+        SET v_delta = -NEW.cantidad;
+
+    ELSE
+        -- Otros movimientos (ej. transferencias) no afectan stock
+        SET v_delta = 0;
+    END IF;
+
+    -- Aplicar cambios si corresponde
+    IF v_delta <> 0 THEN
+        IF EXISTS (
+            SELECT 1 FROM Stock
+            WHERE id_material = NEW.id_material
+              AND id_ubicacion = NEW.id_ubicacion
+        ) THEN
             UPDATE Stock
-            SET cantidad_actual = cantidad_actual + NEW.cantidad,
-                fecha_actualizacion = CURDATE()
-            WHERE id_material = NEW.id_material AND id_ubicacion = NEW.id_ubicacion;
+            SET cantidad_actual   = COALESCE(cantidad_actual, 0) + v_delta,
+                fecha_actualizacion = CURRENT_DATE()
+            WHERE id_material = NEW.id_material
+              AND id_ubicacion = NEW.id_ubicacion;
         ELSE
-            INSERT INTO Stock (id_material, id_ubicacion, cantidad_actual, fecha_actualizacion)
-            VALUES (NEW.id_material, NEW.id_ubicacion, NEW.cantidad, CURDATE());
+            -- Solo insertamos si el delta es positivo (no creamos stock negativo desde cero)
+            IF v_delta > 0 THEN
+                INSERT INTO Stock (id_material, id_ubicacion, cantidad_actual, fecha_actualizacion)
+                VALUES (NEW.id_material, NEW.id_ubicacion, v_delta, CURRENT_DATE());
+            END IF;
         END IF;
-
-    ELSEIF v_tipo = 'Salida' THEN
-        UPDATE Stock
-        SET cantidad_actual = cantidad_actual - NEW.cantidad,
-            fecha_actualizacion = CURDATE()
-        WHERE id_material = NEW.id_material AND id_ubicacion = NEW.id_ubicacion;
     END IF;
 END 
 
 //
 
 DELIMITER ;
+
 
 
 
