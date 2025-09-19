@@ -1,0 +1,20 @@
+"Número Orden",Proveedor,Material,"Cant. Solicitada","Precio Unit.",Subtotal,"Cant. Recibida","Estado Recepción","Fecha Recepción"
+OC-2024-008,"Distribuidora de Materiales S.R.L.","Tubo cuadrado 40x40x2mm",25.00,850.00,21250.00,0.00,Pendiente,NULL
+OC-2024-008,"Distribuidora de Materiales S.R.L.","Planchuela 1/4" x 4"",30.00,650.00,19500.00,0.00,Pendiente,NULL
+OC-2024-007,"Válvulas y Accesorios del Norte","Válvula seguridad 3/4" 10bar",1.00,95000.00,95000.00,0.00,Pendiente,NULL
+OC-2024-006,"Electrotécnica Industrial S.A.","Luminaria LED 50W IP65",8.00,12500.00,100000.00,0.00,Pendiente,NULL
+OC-2024-006,"Electrotécnica Industrial S.A.","Canaleta metálica 40x40mm",75.00,125.00,9375.00,0.00,Pendiente,NULL
+OC-2024-005,"Química Industrial del Sur","Ácido sulfúrico 98%",10.00,2800.00,28000.00,0.00,Pendiente,NULL
+OC-2024-005,"Química Industrial del Sur","Hidróxido sodio 50%",25.00,1950.00,48750.00,0.00,Pendiente,NULL
+OC-2024-004,"Instrumentos de Precisión Ltda.","Transmisor presión 0-10bar",3.00,28000.00,84000.00,0.00,Pendiente,NULL
+OC-2024-004,"Instrumentos de Precisión Ltda.","Termopar tipo K 500mm",5.00,15600.00,78000.00,0.00,Pendiente,NULL
+OC-2024-004,"Instrumentos de Precisión Ltda.","Manómetro 0-25bar 4"",2.00,8900.00,17800.00,0.00,Pendiente,NULL
+OC-2024-003,"Distribuidora de Materiales S.R.L.","Tubo acero SCH40 1/2"",50.00,1250.00,62500.00,50.00,Completo,2024-07-12
+OC-2024-003,"Distribuidora de Materiales S.R.L.","Codo 90° 1/2" SCH40",20.00,450.00,9000.00,20.00,Completo,2024-07-12
+OC-2024-003,"Distribuidora de Materiales S.R.L.","Tee 1" x 1/2" roscada",15.00,680.00,10200.00,15.00,Completo,2024-07-12
+OC-2024-002,"Válvulas y Accesorios del Norte","Válvula compuerta 2" 150#",2.00,45000.00,90000.00,0.00,Pendiente,NULL
+OC-2024-002,"Válvulas y Accesorios del Norte","Válvula mariposa 6" lug",3.00,32000.00,96000.00,0.00,Pendiente,NULL
+OC-2024-002,"Válvulas y Accesorios del Norte","Válvula bola 1" 600#",4.00,18500.00,74000.00,0.00,Pendiente,NULL
+OC-2024-001,"Electrotécnica Industrial S.A.","Cable THHN 2.5mm² negro",100.00,85.50,8550.00,80.00,Parcial,2024-07-16
+OC-2024-001,"Electrotécnica Industrial S.A.","Interruptor termomagnético 20A 2P",5.00,1250.00,6250.00,5.00,Completo,2024-07-16
+OC-2024-001,"Electrotécnica Industrial S.A.","Breaker 16A 1P",10.00,890.00,8900.00,0.00,Pendiente,NULL
