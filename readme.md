@@ -84,6 +84,9 @@ El proyecto se estructura en **cuatro módulos**:
 
 - **MySQL Workbench** → modelado y desarrollo de la base de datos.  
 - **Microsoft Excel** → visualización y análisis de información.  
+- **ChatGPT, Deepseek, Claude** → Exploración de soluciones, verificación de scripts y generación de datos de ejemplo.  
+- **GitHub** → Gestión de versiones y repositorio.  
+
 
 ---
 
